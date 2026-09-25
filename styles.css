@@ -276,6 +276,150 @@ strong { color: var(--ink); font-weight: 640; }
 
 .readout dd { color: var(--ink); }
 
+/* Nilai yang ikut berubah saat gelombangnya digeser. Ditandai warna pen supaya
+   jelas ini angka yang sedang hidup, bukan angka mati. */
+.readout dd.is-live { color: var(--pen-deep); font-weight: 600; }
+
+/* --- panggung yang bisa disentuh ---------------------------------------- */
+.scope__stage {
+  position: relative;
+  border-radius: 3px;
+  cursor: ew-resize;
+  touch-action: none;              /* menggeser tidak ikut men-scroll halaman */
+}
+
+.scope__stage:focus-visible {
+  outline: 2px dashed var(--pen-deep);
+  outline-offset: 4px;
+}
+
+/* Penanda posisi jari. Selalu ada, baru terlihat saat dipakai. */
+.scope__playhead {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 1px;
+  background: var(--pen);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform;
+  transition: opacity 0.16s var(--ease);
+}
+
+.scope__stage.is-hover .scope__playhead { opacity: 0.35; }
+.scope__stage.is-active .scope__playhead { opacity: 1; }
+
+/* --- penanda selubung --------------------------------------------------- */
+/* Berjalan mengikuti selubung sambil nada berbunyi. Gerak ini menjelaskan
+   keadaan: nada sedang berbunyi, dan inilah bentuk kekuatannya sepanjang waktu. */
+.envelope { position: relative; }
+
+.envelope__sweep {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 2px;
+  background: var(--pen-deep);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.envelope__sweep.is-running { animation: sweep 1.7s linear forwards; }
+
+@keyframes sweep {
+  from { opacity: 0.85; transform: translateX(0); }
+  to   { opacity: 0;    transform: translateX(var(--sweep-w, 600px)); }
+}
+
+/* --- kendali ------------------------------------------------------------ */
+.scope__controls {
+  display: grid;
+  gap: var(--s3);
+  align-items: center;
+  margin-block-start: var(--s4);
+}
+
+.scope__hint {
+  max-width: var(--measure);
+  font-size: 0.9375rem;
+  color: var(--ink-2);
+}
+
+.play {
+  justify-self: start;
+  min-height: 44px;
+  padding-inline: var(--s3);
+  font: inherit;
+  font-weight: 600;
+  color: var(--paper);
+  background: var(--pen-deep);
+  border: 1.5px solid var(--pen-deep);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.play:hover { background: var(--ink); border-color: var(--ink); }
+
+.play:focus-visible {
+  outline: 2px dashed var(--pen-deep);
+  outline-offset: 3px;
+}
+
+/* --- papan nada --------------------------------------------------------- */
+/* Sengaja tipis dan nyaris tanpa warna: ini diagram teknis satu oktaf, bukan
+   mainan. Warna pen cuma dipakai untuk menandai tuts yang sedang dipilih. */
+.keys {
+  position: relative;
+  height: 68px;
+  margin-block-start: var(--s4);
+  user-select: none;
+}
+
+.key {
+  position: absolute;
+  inset-block-start: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 0 5px;
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 0 0 3px 3px;
+}
+
+.key--white { height: 100%; }
+.key--black { height: 60%; background: var(--ink); border-color: var(--ink); z-index: 2; }
+
+.key__label {
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+}
+
+.key:hover { background: var(--pen-wash); }
+.key--black:hover { background: oklch(0.34 0.02 62); }
+
+/* Tuts yang dipilih. Memakai pen-deep, bukan pen, supaya label 10px di atasnya
+   punya margin kontras yang cukup: sekitar 6,4:1, bukan 4,8:1. */
+.key[aria-pressed="true"] { background: var(--pen-deep); border-color: var(--pen-deep); }
+.key[aria-pressed="true"] .key__label { color: var(--paper); }
+
+.key:focus-visible {
+  outline: 2px dashed var(--pen-deep);
+  outline-offset: 2px;
+  z-index: 3;
+}
+
+.keys__hint {
+  margin-block-start: var(--s2);
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+
 .scope figcaption {
   max-width: var(--measure);
   margin-block-start: var(--s3);
@@ -473,6 +617,11 @@ strong { color: var(--ink); font-weight: 640; }
   .scope__wave.is-drawing { stroke-dasharray: none; stroke-dashoffset: 0; }
   .envelope__line { opacity: 1; }
   .record:hover { transform: none; }
+
+  /* Gerak yang bisa memicu rasa pusing dimatikan. Suaranya tetap ada, jadi
+     yang menjelaskan keadaan tidak hilang. */
+  .envelope__sweep.is-running { animation: none; opacity: 0; }
+  .scope__playhead { transition: none; }
 }
 
 /* --- susunan: layar lebar ------------------------------------------------ */
@@ -509,6 +658,8 @@ strong { color: var(--ink); font-weight: 640; }
   .record__spec > div { justify-items: end; }
 
   .readout { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+
+  .scope__controls { grid-template-columns: minmax(0, 1fr) auto; gap: var(--s4); }
 
   .notes__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); }
 
