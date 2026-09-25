@@ -1,42 +1,236 @@
-<!-- index.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register/Login Form</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>nuryasin36 — membangun aplikasi, dari sinyal sampai perangkat</title>
+<meta name="description" content="Portofolio nuryasin36. Aplikasi Android dan web yang dibangun sendiri: mesin suara yang dihitung di dalam aplikasi, tuner dengan deteksi nada YIN, perkakas threat intel lokal.">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Register/Login Form</h1>
 
-  <!-- Register Form -->
-  <h2>Register</h2>
-  <form id="registerForm">
-    <label for="registerName">Nama:</label>
-    <input type="text" id="registerName" name="registerName" data-cy="registerName" required><br>
+<a class="skip" href="#kerja">Lompat ke daftar kerja</a>
 
-    <label for="registerEmail">Email:</label>
-    <input type="email" id="registerEmail" name="registerEmail" data-cy="registerEmail" required><br>
+<header class="masthead">
+  <div class="masthead__id">
+    <p class="masthead__mark" aria-hidden="true">NY</p>
+    <div>
+      <h1>nuryasin36</h1>
+      <p class="masthead__role">Membangun aplikasi sendiri — dari perhitungan sinyal sampai berkas yang bisa dipasang di perangkat.</p>
+    </div>
+  </div>
 
-    <label for="registerPassword">Password:</label>
-    <input type="password" id="registerPassword" name="registerPassword" data-cy="registerPassword" required><br>
+  <!-- Kepala lembar perekam: bukan hiasan, ini status sebenarnya dari
+       apa yang bisa diverifikasi di repo ini. -->
+  <dl class="recorder-head">
+    <div>
+      <dt>Kanal</dt>
+      <dd>Android · Web · Python</dd>
+    </div>
+    <div>
+      <dt>Aplikasi terpasang</dt>
+      <dd>5</dd>
+    </div>
+    <div>
+      <dt>Berkas audio dibundel</dt>
+      <dd class="is-pen">0</dd>
+    </div>
+  </dl>
+</header>
 
-    <button type="button" onclick="submitRegisterForm()" data-cy="registerButton">Register</button>
-  </form>
+<main>
 
-  <!-- Login Form -->
-  <h2>Login</h2>
-  <form id="loginForm">
-    <label for="loginEmail">Email:</label>
-    <input type="email" id="loginEmail" name="loginEmail" data-cy="loginEmail" required><br>
+  <!-- ============================================================
+       OBJEK BUKTI: gelombang yang dihitung dari mesin suara sendiri.
+       Digambar oleh script.js memakai matematika yang sama seperti
+       mesin sintesis di aplikasi piano.
+       ============================================================ -->
+  <section class="strip" aria-labelledby="strip-title">
+    <h2 id="strip-title" class="visually-hidden">Gelombang satu nada, dihitung di dalam aplikasi</h2>
 
-    <label for="loginPassword">Password:</label>
-    <input type="password" id="loginPassword" name="loginPassword" data-cy="loginPassword" required><br>
+    <figure class="scope">
+      <svg id="scope" class="scope__svg" viewBox="0 0 1200 240" preserveAspectRatio="none"
+           role="img" aria-labelledby="scope-t scope-d">
+        <title id="scope-t">Gelombang satu nada piano yang dihitung perangkat lunak</title>
+        <desc id="scope-d">Rekaman strip chart yang menggambarkan satu nada C4. Bentuknya tidak rata seperti gelombang sinus, karena tersusun dari delapan harmonik yang meredup dengan kecepatan berbeda.</desc>
+        <g class="scope__grid" id="scopeGrid" aria-hidden="true"></g>
+        <path class="scope__wave" id="scopeWave" d=""></path>
+      </svg>
 
-    <button type="button" onclick="submitLoginForm()" data-cy="loginButton">Login</button>
-  </form>
+      <svg id="envelope" class="envelope__svg" viewBox="0 0 1200 90" preserveAspectRatio="none"
+           role="img" aria-labelledby="env-t env-d">
+        <title id="env-t">Selubung amplitudo nada selama 1,7 detik</title>
+        <desc id="env-d">Grafik yang menunjukkan nada mencapai puncaknya dalam 4 milidetik, lalu meredup perlahan sampai habis pada 1,7 detik.</desc>
+        <g class="scope__grid" id="envGrid" aria-hidden="true"></g>
+        <path class="envelope__line" id="envLine" d=""></path>
+      </svg>
 
-  <script src="script.js"></script>
+      <!-- Pembacaan alat: angka sebenarnya dari gelombang yang digambar di atas. -->
+      <dl class="readout">
+        <div><dt>Nada dasar</dt><dd class="mono">261,63 Hz</dd></div>
+        <div><dt>Harmonik</dt><dd class="mono">8</dd></div>
+        <div><dt>Senar maya</dt><dd class="mono">2 · selisih 1,7 sen</dd></div>
+        <div><dt>Serangan</dt><dd class="mono">4 ms</dd></div>
+        <div><dt>Panjang nada</dt><dd class="mono">1,70 s</dd></div>
+        <div><dt>Titik dihitung</dt><dd class="mono">1.400</dd></div>
+      </dl>
+
+      <figcaption>
+        <span class="fig">Gbr. 1</span>
+        Satu nada C4. Bentuk ini bukan hasil rekaman dan bukan gambar hiasan — dihitung saat halaman ini dimuat, memakai delapan harmonik dengan peluruhan berbeda per harmonik, persis seperti mesin suara di <strong>Piano Anak</strong>. Garis putus-putus di bawahnya adalah selubung amplitudonya: naik dalam 4 milidetik, lalu meredup selama 1,7 detik.
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- ============================================================ -->
+  <section id="kerja" class="work" aria-labelledby="kerja-title">
+    <header class="work__head">
+      <h2 id="kerja-title">Yang sudah dibangun</h2>
+      <p class="work__note">Enam perkakas. Semuanya berjalan di perangkat sendiri: tanpa akun, tanpa server yang harus hidup.</p>
+    </header>
+
+    <ol class="records">
+
+      <li class="record">
+        <p class="record__idx" aria-hidden="true">01</p>
+        <div class="record__body">
+          <h3>Piano Anak</h3>
+          <p>Piano warna-warni untuk anak. Delapan tuts putih dan lima tuts hitam, bisa ditekan beberapa jari sekaligus atau diseret untuk glissando, dengan mode lagu yang menuntun lewat tuts berkedip.</p>
+          <p class="record__why">Alasan ditulis begitu: <strong>tidak ada satu pun berkas audio di dalamnya.</strong> Seluruh suara piano dihitung di dalam aplikasi, jadi tidak ada yang perlu diunduh dan aplikasinya jalan tanpa internet.</p>
+        </div>
+        <dl class="record__spec">
+          <div><dt>Stack</dt><dd>Flutter</dd></div>
+          <div><dt>Paket</dt><dd class="mono">com.yasin.kids_piano</dd></div>
+          <div><dt>Ukuran</dt><dd class="mono">43,98 MB</dd></div>
+        </dl>
+      </li>
+
+      <li class="record">
+        <p class="record__idx" aria-hidden="true">02</p>
+        <div class="record__body">
+          <h3>Guitar Tuner</h3>
+          <p>Tuner dengan deteksi nada YIN. Mencakup seluruh penyetelan gitar, bass, ukulele, mandolin, banjo, dan instrumen string orkestra.</p>
+          <p class="record__why">Alasan ditulis begitu: deteksi nada di sini bukan tebakan kasar dari puncak spektrum, tapi algoritma khusus yang tahan terhadap harmonik yang saling menumpuk.</p>
+        </div>
+        <dl class="record__spec">
+          <div><dt>Stack</dt><dd>Flutter</dd></div>
+          <div><dt>Paket</dt><dd class="mono">com.yasin.guitar_tuner</dd></div>
+          <div><dt>Ukuran</dt><dd class="mono">49,51 MB</dd></div>
+        </dl>
+      </li>
+
+      <li class="record">
+        <p class="record__idx" aria-hidden="true">03</p>
+        <div class="record__body">
+          <h3>Buku Mewarnai</h3>
+          <p>Aplikasi mewarnai untuk anak, dengan mode gambar tangan bebas di kanvas kosong: goresan halus, penghapus sungguhan, ukuran kuas, pemilih warna, urungkan, dan simpan-buka kembali.</p>
+          <p class="record__why">Alasan ditulis begitu: bagian menggambar bebas dikerjakan sampai standar aplikasi gambar sungguhan, bukan sekadar coretan tambahan.</p>
+        </div>
+        <dl class="record__spec">
+          <div><dt>Stack</dt><dd>Flutter</dd></div>
+          <div><dt>Paket</dt><dd class="mono">com.yasin.coloring_app</dd></div>
+          <div><dt>Ukuran</dt><dd class="mono">46,15 MB</dd></div>
+        </dl>
+      </li>
+
+      <li class="record">
+        <p class="record__idx" aria-hidden="true">04</p>
+        <div class="record__body">
+          <h3>Hifz Qur'an</h3>
+          <p>Aplikasi hafalan Qur'an: daftar surah, teks Uthmani, terjemahan, dan latihan ingatan yang dibuat seperti permainan — menebak asal ayat dengan pilihan terbatas, dan menyusun ulang kata ayat yang diacak.</p>
+          <p class="record__why">Alasan ditulis begitu: latihannya menuntut mengingat, bukan membaca ulang. Bagian yang pasif dibuang.</p>
+        </div>
+        <dl class="record__spec">
+          <div><dt>Stack</dt><dd>Flutter</dd></div>
+          <div><dt>Paket</dt><dd class="mono">com.hifzquran.hifz_quran</dd></div>
+          <div><dt>Ukuran</dt><dd class="mono">61,56 MB</dd></div>
+        </dl>
+      </li>
+
+      <li class="record">
+        <p class="record__idx" aria-hidden="true">05</p>
+        <div class="record__body">
+          <h3>Produktivitas</h3>
+          <p>Pencatat aktivitas harian. Prinsipnya satu: pencatatan harus selesai di bawah lima menit, jadi bentuknya sengaja dibuat sesingkat mungkin.</p>
+          <p class="record__why">Alasan ditulis begitu: setelah dipakai sendiri, versi pertama yang serba lengkap ternyata tidak efektif — terlalu banyak bagian dengan bobot sama. Yang tersisa hanya alur yang benar-benar sering dipakai.</p>
+        </div>
+        <dl class="record__spec">
+          <div><dt>Stack</dt><dd>Flutter</dd></div>
+          <div><dt>Paket</dt><dd class="mono">com.yasin.productive_log</dd></div>
+          <div><dt>Ukuran</dt><dd class="mono">54,20 MB</dd></div>
+        </dl>
+      </li>
+
+      <li class="record">
+        <p class="record__idx" aria-hidden="true">06</p>
+        <div class="record__body">
+          <h3>Perkakas threat intel</h3>
+          <p>Perkakas lokal untuk memeriksa daftar indikator kompromi: 172 indikator dari empat berkas CSV diperkaya lewat VirusTotal, hasilnya dipisah menjadi satu lembar per sumber.</p>
+          <p class="record__why">Alasan ditulis begitu: hasilnya diverifikasi ulang dengan tangan. Dua indikator yang awalnya dilaporkan tidak ditemukan ternyata memang berbahaya, dan laporan yang keliru itu ikut diperbaiki sampai ke berkas hasilnya.</p>
+        </div>
+        <dl class="record__spec">
+          <div><dt>Stack</dt><dd>Python</dd></div>
+          <div><dt>Indikator</dt><dd class="mono">172</dd></div>
+          <div><dt>Dependensi</dt><dd class="mono">stdlib</dd></div>
+        </dl>
+      </li>
+
+    </ol>
+  </section>
+
+  <!-- ============================================================ -->
+  <section class="notes" aria-labelledby="notes-title">
+    <header class="work__head">
+      <h2 id="notes-title">Tiga hal yang tidak kelihatan dari layar</h2>
+      <p class="work__note">Bagian yang paling banyak makan waktu justru yang tidak terlihat oleh pemakainya.</p>
+    </header>
+
+    <div class="notes__grid">
+      <article class="note">
+        <h3>Menghitung suara lebih murah daripada menyimpannya</h3>
+        <p>Menyertakan berkas audio membuat aplikasi membengkak dan butuh unduhan. Jadi setiap nada dihitung: delapan harmonik ditumpuk, diberi ketidaksempurnaan nada khas senar piano yang kaku, lalu dua senar maya dibedakan sedikit supaya terdengar seperti senar ganda.</p>
+        <p>Hasilnya nol berkas audio, jalan tanpa internet, dan aplikasinya tetap kecil.</p>
+      </article>
+
+      <article class="note">
+        <h3>Dinding tak terlihat bernama latensi</h3>
+        <p>Sistem Android punya dua jalur pemutaran bunyi, dan yang cepat tidak menerima data mentah dari memori. Jadi nada harus ditulis ke berkas lebih dulu, baru diputar. Kalau jalur cepatnya gagal di perangkat tertentu, jalur lambat dipakai sebagai cadangan supaya aplikasi tidak mati.</p>
+        <p>Ini salah satu hal yang membedakan alat musik dari pemutar berkas biasa.</p>
+      </article>
+
+      <article class="note">
+        <h3>Satu kesalahan yang tidak bersuara</h3>
+        <p>Susunan tuts piano sempat memakai pola jarak yang dipatok mati. Pola itu hanya benar kalau keyboard dimulai dari nada C. Untuk tiga lagu yang dimulai dari nada lain, ada tuts berlabel "Fa" yang sebenarnya berbunyi Fa♯ — salah nada, tanpa satu pun pesan kesalahan.</p>
+        <p>Ketahuan oleh pengujian, bukan oleh mata. Sekarang pola jaraknya dihitung dari nada awalnya, dan pengujiannya memeriksa semua kemungkinan nada awal.</p>
+      </article>
+    </div>
+  </section>
+
+</main>
+
+<footer class="colophon">
+  <div class="colophon__grid">
+    <div>
+      <h2 class="colophon__title">Hubungi</h2>
+      <p>Yang paling cepat: lewat GitHub.</p>
+      <ul class="contact">
+        <li><a href="https://github.com/nuryasin36">github.com/nuryasin36</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="colophon__title">Tentang halaman ini</h2>
+      <ul class="facts">
+        <li>HTML, CSS, dan JavaScript tanpa kerangka kerja</li>
+        <li>Tanpa dependensi, tanpa jaringan, tanpa pelacak</li>
+        <li>Tipografi memakai huruf bawaan sistem, jadi tidak ada yang diunduh</li>
+        <li>Gelombang di atas dihitung di dalam peramban saat halaman dimuat</li>
+      </ul>
+    </div>
+  </div>
+  <p class="colophon__sig"><span class="mono" aria-hidden="true">— 30 —</span> nuryasin36</p>
+</footer>
+
+<script src="script.js"></script>
 </body>
 </html>

@@ -1,46 +1,530 @@
-/* styles.css */
+/* ==========================================================================
+   nuryasin36.github.io
+   Premis: lembar perekam strip chart. Kertas gulung, pen merah, angka hasil
+   ukur di kolom kanan. Bukan dark-terminal, bukan cream-ungu.
+
+   Warna dibangun di OKLCH supaya langkah terangnya rata di mata.
+   Tipografi tiga peran, semuanya huruf bawaan sistem (nol unduhan):
+     serif  = catatan tertulis     -> judul
+     sans   = teks jalan           -> isi
+     mono   = angka hasil ukur     -> spesifikasi
+   ========================================================================== */
+
+/* --- token ---------------------------------------------------------------- */
+:root {
+  /* permukaan & tinta */
+  --paper:      oklch(0.966 0.008 85);   /* kertas perekam, hangat */
+  --paper-2:    oklch(0.936 0.011 85);   /* jalur yang ditenggelamkan */
+  --ink:        oklch(0.235 0.014 62);   /* tinta mendekati hitam */
+  --ink-2:      oklch(0.435 0.013 62);   /* teks isi */
+  --ink-3:      oklch(0.490 0.012 62);   /* keterangan; digelapkan supaya teks
+                                            10–11px lolos rasio kontras 4,5:1 */
+  --rule:       oklch(0.850 0.013 78);   /* garis rambut & kisi */
+  --rule-soft:  oklch(0.912 0.010 78);
+
+  /* pen: satu-satunya warna jenuh. Dipakai hemat, hanya untuk sinyal. */
+  --pen:        oklch(0.575 0.196 34);
+  --pen-deep:   oklch(0.462 0.178 32);
+  --pen-wash:   oklch(0.575 0.196 34 / 0.10);
+
+  /* ruang: kelipatan 4 / 16 / 36 piksel saja */
+  --s1: 0.25rem;
+  --s2: 0.5rem;
+  --s3: 1rem;
+  --s4: 2.25rem;
+  --s5: 4.5rem;
+  --s6: 7rem;
+
+  --measure: 68ch;
+  --shell: 76rem;
+
+  --serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans:  system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono:  ui-monospace, "Cascadia Mono", "SF Mono", Consolas, "Liberation Mono", monospace;
+
+  --ease: cubic-bezier(0.22, 0.68, 0.24, 1);
+}
+
+/* --- dasar --------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink-2);
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.62;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tekstur kertas: satu gradien sangat halus, tidak mengganggu keterbacaan. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(120% 80% at 12% 0%, oklch(0.985 0.006 85) 0%, transparent 60%),
+    radial-gradient(90% 60% at 100% 100%, oklch(0.945 0.012 70) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+h1, h2, h3 {
+  font-family: var(--serif);
+  color: var(--ink);
+  line-height: 1.14;
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+p { margin: 0; }
+ul, ol, dl, dd { margin: 0; padding: 0; }
+li { list-style: none; }
+
+a {
+  color: var(--pen-deep);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+strong { color: var(--ink); font-weight: 640; }
+
+.mono {
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+
+/* Fokus: garis putus-putus, bukan garis penuh. Garis penuh terlihat seperti
+   teks yang terseleksi; putus-putus terbaca sebagai fokus. */
+:focus-visible {
+  outline: 2px dashed var(--pen-deep);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.skip {
+  position: absolute;
+  inset-inline-start: var(--s3);
+  inset-block-start: -100%;
+  z-index: 10;
+  padding: var(--s2) var(--s3);
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 4px;
+  text-decoration: none;
+}
+.skip:focus { inset-block-start: var(--s3); }
+
+/* --- rangka -------------------------------------------------------------- */
+.masthead,
+.strip,
+.work,
+.notes,
+.colophon {
+  padding-inline: clamp(1rem, 5vw, 4rem);
+}
+
+.masthead, .work, .notes, .colophon {
+  max-width: var(--shell);
+  margin-inline: auto;
+}
+
+/* --- kepala lembar ------------------------------------------------------- */
+.masthead {
+  padding-block: var(--s5) var(--s4);
+  display: grid;
+  gap: var(--s4);
+}
+
+.masthead__id {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--s3);
+  align-items: start;
+}
+
+/* Tanda tangan: dua huruf di dalam kotak bergaris, seperti cap instrumen. */
+.masthead__mark {
+  font-family: var(--mono);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--pen-deep);
+  border: 1.5px solid var(--pen);
+  border-radius: 3px;
+  padding: 0.3rem 0.45rem;
+  line-height: 1;
+}
+
+.masthead h1 {
+  font-size: clamp(2rem, 6.4vw, 3.4rem);
+  margin-bottom: var(--s2);
+}
+
+.masthead__role {
+  max-width: 34ch;
+  color: var(--ink-2);
+  font-size: 1.0625rem;
+}
+
+.recorder-head {
+  display: grid;
+  gap: var(--s3);
+  border-block-start: 1.5px solid var(--ink);
+  padding-block-start: var(--s3);
+}
+
+.recorder-head dt {
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.recorder-head dd {
+  font-family: var(--mono);
+  font-size: 0.9375rem;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Satu-satunya tempat warna pen dipakai sebagai teks: angka nol yang jadi
+   inti seluruh halaman ini. */
+.is-pen { color: var(--pen-deep); font-weight: 600; }
+
+/* --- strip perekam ------------------------------------------------------- */
+.strip {
+  padding-block: var(--s4) var(--s5);
+  background: var(--paper-2);
+  border-block: 1.5px solid var(--ink);
+}
+
+.scope {
+  max-width: var(--shell);
+  margin-inline: auto;
+}
+
+.scope__svg {
+  display: block;
+  width: 100%;
+  height: clamp(120px, 22vw, 240px);
+}
+
+.envelope__svg {
+  display: block;
+  width: 100%;
+  height: clamp(44px, 7vw, 90px);
+  margin-block-start: var(--s2);
+  border-block-start: 1px solid var(--rule);
+}
+
+.scope__grid line { stroke: var(--rule); stroke-width: 1; }
+.scope__grid line.is-major { stroke: var(--rule-soft); }
+
+.scope__wave {
+  fill: none;
+  stroke: var(--pen);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.envelope__line {
+  fill: none;
+  stroke: var(--pen-deep);
+  stroke-width: 1.4;
+  stroke-dasharray: 4 3;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Pembacaan alat di bawah grafik. Angkanya nyata, jadi bentuknya dibuat
+   seperti panel instrumen: label kecil di atas, nilai di bawah. */
+.readout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s3);
+  margin-block-start: var(--s4);
+  padding-block: var(--s3);
+  border-block: 1px solid var(--rule);
+}
+
+.readout > div { display: grid; gap: 0.1rem; }
+
+.readout dt {
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.readout dd { color: var(--ink); }
+
+.scope figcaption {
+  max-width: var(--measure);
+  margin-block-start: var(--s3);
+  font-size: 0.9375rem;
+  color: var(--ink-2);
+}
+
+.fig {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pen-deep);
+  margin-inline-end: var(--s2);
+}
+
+/* --- daftar kerja -------------------------------------------------------- */
+.work { padding-block: var(--s5) var(--s4); }
+
+.work__head {
+  display: grid;
+  gap: var(--s2);
+  max-width: var(--measure);
+  margin-bottom: var(--s4);
+}
+
+.work__head h2 { font-size: clamp(1.5rem, 3.6vw, 2.05rem); }
+
+.work__note { color: var(--ink-2); }
+
+.records { border-block-start: 1.5px solid var(--ink); }
+
+/* Baris, bukan kartu. Kontennya memang berbaris: nama, penjelasan, angka.
+   Kartu akan menambah kotak tanpa menambah arti. */
+.record {
+  display: grid;
+  gap: var(--s2);
+  padding-block: var(--s4);
+  border-block-end: 1px solid var(--rule);
+  transition: background-color 0.25s var(--ease), transform 0.25s var(--ease);
+}
+
+.record__idx {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.record__body {
+  display: grid;
+  gap: var(--s2);
+  max-width: var(--measure);
+}
+
+.record h3 { font-size: 1.4375rem; }
+
+.record__why {
+  border-inline-start: 2px solid var(--pen);
+  padding-inline-start: var(--s3);
+  color: var(--ink-2);
+  font-size: 1rem;
+}
+
+.record__spec { display: grid; gap: var(--s2); align-content: start; }
+
+.record__spec > div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.record__spec dt {
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.record__spec dd { color: var(--ink); }
+
+/* --- catatan ------------------------------------------------------------- */
+.notes { padding-block: var(--s4) var(--s5); }
+
+.notes__grid { display: grid; gap: var(--s4); }
+
+.note {
+  padding-block-start: var(--s3);
+  border-block-start: 1.5px solid var(--ink);
+}
+
+.note h3 { font-size: 1.1875rem; margin-bottom: var(--s2); }
+
+.note p + p { margin-block-start: var(--s2); }
+
+.note p { font-size: 1rem; }
+
+/* --- kolofon ------------------------------------------------------------- */
+.colophon {
+  padding-block: var(--s4) var(--s5);
+  border-block-start: 1.5px solid var(--ink);
+  background: var(--paper-2);
+  max-width: none;
+}
+
+.colophon__grid {
+  display: grid;
+  gap: var(--s4);
+  max-width: var(--shell);
+  margin-inline: auto;
+  margin-bottom: var(--s4);
+}
+
+.colophon__title {
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 500;
+  margin-bottom: var(--s2);
+}
+
+.contact a { font-size: 1.0625rem; }
+
+.facts { display: grid; gap: var(--s1); font-size: 0.9375rem; }
+
+.facts li {
+  padding-inline-start: var(--s3);
+  position: relative;
+}
+
+.facts li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: 0.62em;
+  width: 0.5rem;
+  height: 1px;
+  background: var(--pen);
+}
+
+.colophon__sig {
+  max-width: var(--shell);
+  margin-inline: auto;
+  padding-block-start: var(--s3);
+  border-block-start: 1px solid var(--rule);
+  font-size: 0.9375rem;
+  color: var(--ink-3);
+}
+
+.colophon__sig .mono { margin-inline-end: var(--s2); }
+
+/* --- motion -------------------------------------------------------------- */
+/* Hanya gerak yang menjelaskan perubahan keadaan. Kalau tidak bisa dijelaskan
+   kenapa ada, dibuang. */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  filter: blur(3px);
+}
+
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  transition:
+    opacity 0.55s var(--ease) var(--d, 0ms),
+    transform 0.55s var(--ease) var(--d, 0ms),
+    filter 0.55s var(--ease) var(--d, 0ms);
+}
+
+.scope__wave.is-drawing {
+  stroke-dasharray: 3000;
+  stroke-dashoffset: 3000;
+  animation: draw 1.5s var(--ease) forwards;
+}
+
+.envelope__line.is-drawing {
+  animation: fade-line 0.9s var(--ease) 0.9s both;
+}
+
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes fade-line { from { opacity: 0; } to { opacity: 1; } }
+
+/* --- gerak dikurangi ----------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
-  
-  h1, h2 {
-    color: #333;
+  .reveal { opacity: 1; transform: none; filter: none; }
+  .scope__wave.is-drawing { stroke-dasharray: none; stroke-dashoffset: 0; }
+  .envelope__line { opacity: 1; }
+  .record:hover { transform: none; }
+}
+
+/* --- susunan: layar lebar ------------------------------------------------ */
+/* Bukan sekadar mengecil. Susunannya yang berubah: kepala lembar jadi dua
+   kolom, baris kerja jadi tiga kolom dengan angka di kanan. */
+@media (min-width: 56rem) {
+  .masthead {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: var(--s5);
+    align-items: end;
+    padding-block: var(--s6) var(--s4);
   }
-  
-  form {
-    max-width: 400px;
-    margin: 20px 0;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+  .recorder-head { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  .masthead__role { font-size: 1.1875rem; }
+
+  .record {
+    grid-template-columns: 3.5rem minmax(0, 1fr) 15rem;
+    gap: var(--s4);
+    align-items: start;
+    padding-block: var(--s5);
   }
-  
-  label {
-    display: block;
-    margin-bottom: 8px;
+
+  .record:hover {
+    background: var(--pen-wash);
+    border-radius: 6px;
+    transform: translateY(-2px);
+    padding-inline: var(--s3);
+    margin-inline: calc(var(--s3) * -1);
   }
-  
-  input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
-  
-  button {
-    background-color: #4caf50;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #45a049;
-  }
-  
+
+  .record__spec { text-align: end; }
+  .record__spec > div { justify-items: end; }
+
+  .readout { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+
+  .notes__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); }
+
+  .colophon__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: var(--s5); }
+}
+
+/* --- susunan: layar sangat lebar ---------------------------------------- */
+@media (min-width: 90rem) {
+  .masthead { gap: var(--s6); }
+  .record { grid-template-columns: 4rem minmax(0, 1fr) 17rem; gap: var(--s5); }
+}
+
+/* --- cetak --------------------------------------------------------------- */
+@media print {
+  body::before { display: none; }
+  .skip, .scope__svg, .envelope__svg { display: none; }
+  .record { break-inside: avoid; }
+  a::after { content: " (" attr(href) ")"; font-size: 0.75rem; color: var(--ink-3); }
+}
